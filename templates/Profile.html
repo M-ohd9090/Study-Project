@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | Help | Contact</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Background - Professional Gradient */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      background-attachment: fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      color: #222;
+    }
+
+    /* Glassmorphism Section Cards */
+    .section {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease;
+    }
+
+    /* Header */
+    header {
+      background: rgba(33, 147, 176, 0.9);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    header .logo {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    header nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+      font-weight: 500;
+    }
+
+    header nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* Section Headings */
+    h2 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 20px;
+    }
+
+    /* About section */
+    .about-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-text {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .about-images img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 10px;
+      border: 3px solid #2193b0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* FAQ Section */
+    .faq p {
+      margin: 8px 0;
+    }
+
+    /* Social Links */
+    .social-links {
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .social-links a {
+      color: #fff;
+      background: #2193b0;
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      margin: 0 6px;
+      transition: 0.3s;
+    }
+
+    .social-links a:hover {
+      background: #176d81;
+      transform: scale(1.1);
+    }
+
+    /* Contact Form */
+    form {
+      display: flex;
+      flex-direction: column;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    form input, form textarea {
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    form button {
+      background: #2193b0;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    form button:hover {
+      background: #176d81;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(33, 147, 176, 0.9);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">📚 Study Planner</div>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#about">About</a>
+      <a href="#help">Help</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+  <header class="topbar">
+    <nav class="top-links">
+      <a href="Dashboard.html">⬅ Back to Dashboard</a>
+    </nav>
+  </header>
+
+  <!-- About Section -->
+  <section id="about" class="section">
+    <h2>About Us</h2>
+    <div class="about-container">
+      <div class="about-text">
+        <p>We are <strong>Amaan</strong> and <strong>Mohammed</strong> — Aspiring IT Software Developers passionate about creating innovative, user-friendly applications that make life easier.</p>
+        <p>Our mission is to combine creativity, technology, and problem-solving skills to build efficient solutions for everyday challenges.</p>
+      </div>
+      <div class="about-images">
+        <img src="static/images/Amn_1.jpg" alt="Amaan">
+        <img src="static/images/Mohd.jpg" alt="Mohammed">
+      </div>
+    </div>
+  </section>
+
+  <!-- Help Section -->
+  <section id="help" class="section">
+    <h2>Help & FAQs</h2>
+    <div class="faq">
+      <p><strong>Q:</strong> How do I save my course progress?</p>
+      <p><strong>A:</strong> Click the save icon next to any course or video, and it will be added to your saved section.</p>
+
+      <p><strong>Q:</strong> Can I access this on mobile?</p>
+      <p><strong>A:</strong> Yes! The site is fully responsive.</p>
+
+      <p><strong>Q:</strong> Who can I contact for technical issues?</p>
+      <p><strong>A:</strong> Use the contact form below or email us directly.</p>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section">
+    <h2>Contact Us</h2>
+    <p>Email: <a href="mailto:stmohd41@gmail.com">stmohd41@gmail.com</a></p>
+
+    <div class="social-links">
+      <a href="https://www.instagram.com/amaanzk_19?igsh=MW10N2hoY2ZldGx3Ng==" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.facebook.com/share/17QaziAHte/" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3BiW674g0dR9WUjeTuyBnPrA%3D%3D" target="_blank"><i class="fab fa-linkedin"></i></a>
+      <a href="https://github.com/M-ohd9090" target="_blank"><i class="fab fa-github"></i></a>
+    </div>
+
+    <form id="contactForm" action="/submit" method="POST">
+      <label>Name:</label>
+      <input type="text" name="name" required>
+
+      <label>Email:</label>
+      <input type="email" name="email" required>
+
+      <label>Message:</label>
+      <textarea name="message" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Study Planner. All rights reserved.</p>
+  </footer>
+</body>
+</html>

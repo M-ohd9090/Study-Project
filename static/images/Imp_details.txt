@@ -1,0 +1,5 @@
+C:\Users\HP\OneDrive\Desktop\Study_Planner_Project
+
+cd "C:\Users\HP\OneDrive\Desktop\Study_Planner_Project"
+
+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

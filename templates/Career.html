@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Career Paths & Roadmaps</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+:root{
+  --bg: url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f") no-repeat center center/cover;
+  --card: rgba(255,255,255,0.12); 
+  --muted: #9aa6b2; 
+  --text: #e6eef6;
+  --accent: #38bdf8; 
+  --accent2: #7c3aed; 
+  --it: #ffd166; 
+  --glass: rgba(255,255,255,0.08);
+}
+:root.light{
+  --bg: url("https://images.unsplash.com/photo-1526481280695-3c720685208b") no-repeat center center/cover;
+  --card: rgba(255,255,255,0.5); 
+  --muted: #516274; 
+  --text: #0b1220;
+  --accent: #0ea5a4; 
+  --accent2: #6d28d9; 
+  --it: #ffd166; 
+  --glass: rgba(5,10,20,0.05);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; 
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  background:var(--bg); 
+  color:var(--text); 
+  transition: background 0.5s ease, color 0.5s ease;
+}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 18px;
+  background: rgba(0,0,0,0.6);
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+.title h1{margin:0;font-size:18px}
+.subtitle{display:block;font-size:12px;color:var(--muted)}
+.btn{
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+.btn.primary{
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#fff; border:none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+}
+
+.container{
+  display:grid;grid-template-columns:1fr 420px;gap:18px;
+  padding:20px;max-width:1200px;margin:20px auto;
+}
+.card{
+  background:var(--card);
+  padding:16px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 8px 30px rgba(2,6,23,0.6);
+  backdrop-filter: blur(14px);
+  transition: all 0.3s ease;
+}
+.card:hover{
+  transform: translateY(-6px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.6);
+}
+.visual {min-height:520px}
+.svg-wrap{width:100%;height:440px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hint{font-size:13px;color:var(--muted);margin-top:8px;text-align:center}
+
+/* Panel */
+.panel {position:relative}
+.empty-state{text-align:center;padding:40px;color:var(--muted)}
+.panel-content.hidden{display:none}
+.panel-header{display:flex;justify-content:space-between;align-items:center}
+.roadmap-wrap{margin-top:12px}
+.roadmap-list{list-style:none;padding:0;margin:0}
+.roadmap-step{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:12px;
+  background: var(--glass);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.roadmap-step:hover { transform: translateY(-6px); box-shadow:0 12px 28px rgba(0,0,0,0.4); }
+.step-index{
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background: linear-gradient(90deg,var(--accent),var(--accent2)); color:#fff; font-weight:700;
+  flex-shrink:0;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+.step-content{flex:1}
+.step-title{font-weight:700;margin:0 0 6px 0}
+.step-desc{margin:0;color:var(--muted);font-size:14px}
+.step-links{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.link-btn{
+  padding:6px 8px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.12);
+  color:var(--text);
+  text-decoration:none;
+  border:1px solid rgba(255,255,255,0.1);
+  font-size:13px;
+  transition: 0.3s;
+}
+.link-btn:hover{
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  color:#fff;
+}
+
+/* Node Effects */
+.node.it circle {filter: drop-shadow(0 8px 18px rgba(255,209,102,0.3));}
+.node circle:hover { filter: drop-shadow(0 0 18px rgba(56,189,248,0.6)); }
+.label {font-size:11px; fill:var(--text); pointer-events:none; font-weight:600}
+.link {stroke: rgba(255,255,255,0.15); stroke-width:2; fill:none}
+
+/* small screens */
+@media (max-width:980px){
+  .container{grid-template-columns:1fr; padding:12px}
+  .svg-wrap{height:320px}
+}
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <nav class="top-links">
+      <a href="Dashboard.html" style="color:var(--text); text-decoration:none; font-weight:700">⬅ Back to Dashboard</a>
+    </nav>
+
+    <div style="display:flex; gap:12px; align-items:center">
+      <div class="title" style="text-align:left; margin-right:12px">
+        <h1 style="margin:0">Career Paths & Roadmaps</h1>
+        <small class="subtitle">Interactive — Science · Arts · Commerce</small>
+      </div>
+      <div class="top-controls" style="display:flex; gap:8px; align-items:center">
+        <button id="themeBtn" class="btn">Toggle Theme</button>
+        <button id="exportBtn" class="btn">Export</button>
+        <label class="import-label btn">Import
+          <input id="importFile" type="file" accept="application/json" hidden>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="visual card">
+      <h2>Career Streams Map</h2>
+      <div id="svgWrap" class="svg-wrap" aria-hidden="false"></div>
+      <p class="hint">Click any field bubble to open its vertical roadmap and courses on the right.</p>
+    </section>
+
+    <aside class="panel card">
+      <div id="panelEmpty" class="empty-state">
+        <h3>Select a career field from the map</h3>
+        <p>The roadmap will show recommended steps and course links (Udemy, Simplilearn, Coursera, etc.).</p>
+      </div>
+
+      <div id="panel" class="panel-content hidden">
+        <header class="panel-header">
+          <h2 id="careerTitle">—</h2>
+        </header>
+
+        <div class="roadmap-wrap">
+          <ol id="roadmapList" class="roadmap-list"></ol>
+        </div>
+
+        <div class="panel-footer" style="margin-top:12px; display:flex; gap:8px">
+          <button id="saveBtn" class="btn primary">Save Progress</button>
+          <button id="clearBtn" class="btn">Clear Progress</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- keep your JS same (only styles updated) -->
+  <script>
+    // your whole JS logic remains same (nodes, roadmap, progress, theme toggle, etc.)
+    (() => {
+  const STORAGE = "careerPathsRoadmap_v1";
+  const THEME = "careerTheme_v1";
+
+  // Structure: streams -> fields -> roadmap steps (title, desc, courses[])
+  const structure = [
+    {
+      id: "science",
+      label: "Science",
+      fields: [
+        {
+          id: "datasci",
+          label: "Data Analyst",
+          it: true,
+          roadmap: [
+            {
+              title: "Foundations: Excel & SQL",
+              desc: "Basics of spreadsheets, formulas, and querying data with SQL.",
+              courses: [
+                { title: "Udemy - Data Analytics (Excel & SQL)", url: "https://www.udemy.com/topic/data-analysis/" },
+                { title: "Simplilearn - Free Data Analyst Course", url: "https://www.simplilearn.com/learn-data-analytics-for-beginners-skillup" }
+              ]
+            },
+            {
+              title: "Programming: Python for Data",
+              desc: "Learn pandas, numpy, and data cleaning in Python.",
+              courses: [
+                { title: "Udemy - Complete Data Analyst Bootcamp", url: "https://www.udemy.com/course/the-data-analyst-course-complete-data-analyst-bootcamp/" },
+                { title: "Coursera - IBM Data Analyst", url: "https://www.coursera.org/professional-certificates/ibm-data-analyst" }
+              ]
+            },
+            {
+              title: "Visualization: Power BI / Tableau",
+              desc: "Build dashboards and visual reports.",
+              courses: [
+                { title: "Udemy - Power BI / Tableau courses", url: "https://www.udemy.com/topic/power-bi/" }
+              ]
+            },
+            {
+              title: "Project & Portfolio",
+              desc: "Hands-on projects, case studies, and portfolio building.",
+              courses: [
+                { title: "Udemy - Data Analyst Bootcamp (project-based)", url: "https://www.udemy.com/course/data-analytics-career-track/" }
+              ]
+            },
+            {
+              title: "Interview Readiness",
+              desc: "Practice case studies, SQL challenges and communication.",
+              courses: [
+                { title: "Coursera - Data Analytics career guides", url: "https://www.coursera.org/courses?query=data%20analytics" }
+              ]
+            }
+          ]
+        },
+        {
+          id: "software",
+          label: "Software Developer",
+          it: true,
+          roadmap: [
+            { title: "Programming Basics (Python / JS)", desc: "Learn syntax, control flow and data structures.", courses:[{title:"Udemy - Programming courses", url:"https://www.udemy.com/courses/search/?q=programming"}] },
+            { title: "Data Structures & Algorithms", desc: "Important for interviews and problem solving.", courses:[{title:"Udemy - DSA", url:"https://www.udemy.com/topic/data-structures-and-algorithms/"}] },
+            { title: "System Design & Projects", desc: "Build full-stack projects and system patterns.", courses:[{title:"Coursera - Full Stack", url:"https://www.coursera.org/specializations/full-stack"}] }
+          ]
+        },
+        // other science fields...
+      ]
+    },
+    {
+      id: "arts",
+      label: "Arts",
+      fields: [
+        {
+          id: "uiux",
+          label: "UI/UX Designer",
+          it: true,
+          roadmap: [
+            { title: "Design Fundamentals", desc:"UI principles, color theory, typography.", courses:[{title:"Udemy - UI/UX", url:"https://www.udemy.com/topic/ux-design/"}] },
+            { title: "Design Tools", desc:"Figma, Sketch, Adobe XD.", courses:[{title:"Coursera - UI/UX", url:"https://www.coursera.org/courses?query=ui%20ux"}] },
+            { title: "Portfolio & Freelance", desc:"Build design case studies and portfolio.", courses:[{title:"Udemy - Portfolio projects", url:"https://www.udemy.com/topic/portfolio/"}] }
+          ]
+        },
+        {
+          id: "anim",
+          label: "Animator",
+          it: true,
+          roadmap: [
+            { title:"Animation Basics", desc:"Animation principles and keyframe work.", courses:[{title:"Udemy - Animation", url:"https://www.udemy.com/topic/animation/"}]} ,
+            { title:"Tools (Blender/After Effects)", desc:"Learn industry tools.", courses:[{title:"Udemy - Blender", url:"https://www.udemy.com/topic/blender/"}]}
+          ]
+        }
+      ]
+    },
+    {
+      id: "commerce",
+      label: "Commerce",
+      fields: [
+        {
+          id: "busanal",
+          label: "Business Analyst",
+          it: true,
+          roadmap: [
+            { title:"Business Fundamentals", desc:"Understand business processes and KPIs.", courses:[{title:"Simplilearn - Business Analyst", url:"https://www.simplilearn.com/business-analyst-certification-course"}] },
+            { title:"Tools: Excel, SQL & Tableau", desc:"Data manipulation and dashboards.", courses:[{title:"Udemy - Excel / Tableau", url:"https://www.udemy.com/topic/tableau/"}] },
+            { title:"Domain Knowledge & Projects", desc:"Industry-specific case studies.", courses:[{title:"Coursera - Business Analytics", url:"https://www.coursera.org/courses?query=business%20analytics"}] }
+          ]
+        },
+        {
+          id: "ecom",
+          label: "E-commerce Specialist",
+          it: true,
+          roadmap: [
+            { title:"E-commerce Basics", desc:"Marketplaces, product listing, logistics.", courses:[{title:"Udemy - E-commerce", url:"https://www.udemy.com/topic/e-commerce/"}] },
+            { title:"Digital Marketing", desc:"SEO, Ads, Analytics.", courses:[{title:"Coursera - Digital Marketing", url:"https://www.coursera.org/specializations/digital-marketing"}] }
+          ]
+        }
+      ]
+    }
+  ];
+
+  // DOM refs
+  const svgWrap = document.getElementById("svgWrap");
+  const panel = document.getElementById("panel");
+  const panelEmpty = document.getElementById("panelEmpty");
+  const careerTitle = document.getElementById("careerTitle");
+  const roadmapList = document.getElementById("roadmapList");
+  const saveBtn = document.getElementById("saveBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const exportBtn = document.getElementById("exportBtn");
+  const importFile = document.getElementById("importFile");
+  const themeBtn = document.getElementById("themeBtn");
+
+  // state: progress per field (fieldId -> number)
+  let progress = loadProgress();
+  let selectedField = null;
+  let svg, svgNS;
+
+  // init
+  window.addEventListener("load", () => {
+    const theme = localStorage.getItem(THEME) || "dark";
+    if(theme === "light") document.documentElement.classList.add("light");
+    themeBtn.onclick = toggleTheme;
+    exportBtn.onclick = exportData;
+    importFile.addEventListener("change", importData);
+    saveBtn.onclick = () => { saveProgress(); showToast("Saved"); };
+    clearBtn.onclick = onClearProgress;
+    buildSVG();
+    renderChart();
+    window.addEventListener("resize", () => { setTimeout(renderChart, 120); });
+  });
+
+  function toggleTheme(){
+    const isLight = document.documentElement.classList.toggle("light");
+    localStorage.setItem(THEME, isLight ? "light":"dark");
+  }
+
+  function loadProgress(){
+    try {
+      const raw = localStorage.getItem(STORAGE);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveProgress(){
+    localStorage.setItem(STORAGE, JSON.stringify(progress));
+  }
+
+  function exportData(){
+    const blob = new Blob([JSON.stringify(progress, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `career-roadmap-progress-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function importData(e){
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if(typeof parsed !== "object") throw new Error("Invalid format");
+        progress = parsed;
+        saveProgress();
+        showToast("Import successful");
+        if(selectedField) renderRoadmapFor(selectedField);
+      } catch(err) {
+        alert("Import failed: " + err.message);
+      }
+    };
+    r.readAsText(f);
+    e.target.value = "";
+  }
+
+  // SVG builder and rendering
+  function buildSVG(){
+    svgWrap.innerHTML = "";
+    svgNS = "http://www.w3.org/2000/svg";
+    svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svgWrap.appendChild(svg);
+  }
+
+  function renderChart(){
+    if(!svg) buildSVG();
+    svg.innerHTML = "";
+    const w = svgWrap.clientWidth || 900;
+    const h = svgWrap.clientHeight || 440;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
+    // draw root
+    const cx = w/2, cy = 80;
+    drawNode(cx, cy, "Career Streams", { r:48, root:true });
+
+    // branches horizontally below root
+    const branchY = 220;
+    const gap = Math.min(360, w / 3.2);
+    const startX = cx - gap;
+    structure.forEach((stream, i) => {
+      const bx = startX + i * gap;
+      drawLink(cx, cy + 40, bx, branchY - 38);
+      drawNode(bx, branchY, stream.label, { r:36, streamId:stream.id });
+
+      // place fields vertically under the branch (vertical layout)
+      const baseY = branchY + 70;
+      const spacing = 78;
+      stream.fields.forEach((f, idx) => {
+        const fx = bx;
+        const fy = baseY + idx * spacing;
+        drawLink(bx, branchY + 38, fx, fy - 18);
+        drawNode(fx, fy, f.label, { r:22, fieldId:f.id, it: !!f.it });
+      });
+    });
+
+    // interactions
+    svg.querySelectorAll(".node").forEach(n => {
+      n.addEventListener("click", onNodeClick);
+      n.addEventListener("mouseenter", ()=> n.classList.add("hover"));
+      n.addEventListener("mouseleave", ()=> n.classList.remove("hover"));
+      // make labels clickable too (so text click works)
+      n.style.cursor = 'pointer';
+    });
+  }
+
+  function drawNode(x, y, label, opts={}){
+    const g = document.createElementNS(svgNS, "g");
+    g.classList.add("node");
+    if(opts.it) g.classList.add("it");
+    if(opts.streamId) g.dataset.streamId = opts.streamId;
+    if(opts.fieldId) g.dataset.fieldId = opts.fieldId;
+
+    const r = opts.r || 18;
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("cx", x); circle.setAttribute("cy", y); circle.setAttribute("r", r);
+    if(opts.it) circle.setAttribute("fill", getVar("--it"));
+    else if(opts.root) circle.setAttribute("fill", getVar("--accent2"));
+    else circle.setAttribute("fill", getVar("--card"));
+    circle.setAttribute("stroke","rgba(255,255,255,0.06)");
+    circle.setAttribute("stroke-width", opts.root?2:1);
+
+    const text = document.createElementNS(svgNS, "text");
+    text.setAttribute("x", x); text.setAttribute("y", y + r + 14);
+    text.setAttribute("text-anchor","middle"); text.setAttribute("class","label");
+    text.textContent = label;
+
+    g.appendChild(circle); g.appendChild(text);
+    svg.appendChild(g);
+
+    // entrance animation
+    circle.setAttribute("transform","scale(0)");
+    setTimeout(()=> circle.setAttribute("transform","scale(1)"), 30);
+    circle.style.transition = "transform 360ms cubic-bezier(.2,.9,.3,1)";
+
+    return g;
+  }
+
+  function drawLink(x1,y1,x2,y2){
+    const path = document.createElementNS(svgNS,"path");
+    const cpx = x1;
+    const cpy = (y1+y2)/2;
+    const d = `M ${x1} ${y1} C ${cpx} ${cpy} ${x2} ${cpy} ${x2} ${y2}`;
+    path.setAttribute("d", d);
+    path.setAttribute("class","link");
+    path.setAttribute("stroke","rgba(255,255,255,0.06)");
+    path.setAttribute("fill","none");
+    svg.appendChild(path);
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = len;
+    path.style.strokeDashoffset = len;
+    setTimeout(()=> path.style.strokeDashoffset = 0, 30);
+    path.style.transition = "stroke-dashoffset 500ms ease";
+    return path;
+  }
+
+  function onNodeClick(e){
+    const g = e.currentTarget;
+    const fieldId = g.dataset.fieldId;
+    if(fieldId){
+      openRoadmap(fieldId);
+    } else {
+      const streamId = g.dataset.streamId;
+      if(streamId) highlightStream(streamId);
+      else pulseAll();
+    }
+  }
+
+  function highlightStream(streamId){
+    const stream = structure.find(s=>s.id===streamId);
+    if(!stream) return;
+    const ids = stream.fields.map(f=>f.id);
+    svg.querySelectorAll(".node").forEach(n=>{
+      if(n.dataset.fieldId && ids.includes(n.dataset.fieldId)){
+        n.style.transform = "scale(1.06)";
+        setTimeout(()=> n.style.transform = "", 420);
+      }
+    });
+  }
+  function pulseAll(){
+    svg.querySelectorAll(".node").forEach(n => { n.style.transform="scale(1.03)"; setTimeout(()=> n.style.transform="", 260); });
+  }
+
+  // ---- Roadmap panel ----
+  function openRoadmap(fieldId){
+    selectedField = fieldId;
+    const fieldInfo = findField(fieldId);
+    if(!fieldInfo) return;
+    careerTitle.textContent = fieldInfo.label;
+    panelEmpty.classList.add("hidden");
+    panel.classList.remove("hidden");
+    renderRoadmapFor(fieldId);
+  }
+
+  function findField(fieldId){
+    for(const s of structure){
+      const f = s.fields.find(x=>x.id===fieldId);
+      if(f) return { ...f, stream: s.id };
+    }
+    return null;
+  }
+
+  function renderRoadmapFor(fieldId){
+    const f = findField(fieldId);
+    const roadmap = (f && f.roadmap) ? f.roadmap : [];
+    roadmapList.innerHTML = "";
+    roadmap.forEach((step, idx) => {
+      const li = document.createElement("li");
+      li.className = "roadmap-step";
+      const stepIndex = document.createElement("div");
+      stepIndex.className = "step-index"; stepIndex.textContent = idx+1;
+      const stepContent = document.createElement("div"); stepContent.className = "step-content";
+      const t = document.createElement("div"); t.className = "step-title"; t.textContent = step.title;
+      const d = document.createElement("div"); d.className = "step-desc"; d.textContent = step.desc || "";
+      const links = document.createElement("div"); links.className = "step-links";
+
+      (step.courses || []).forEach(c => {
+        const a = document.createElement("a");
+        a.className = "link-btn"; a.textContent = c.title;
+        a.href = c.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+        links.appendChild(a);
+      });
+
+      // progress button
+      const progressBtn = document.createElement("button");
+      progressBtn.className = "btn";
+      const completedIdx = progress[fieldId] || 0;
+      progressBtn.textContent = (completedIdx > idx) ? "Done" : "Mark done";
+      progressBtn.onclick = () => {
+        // toggle done for this step and update stored 'completed index'
+        const current = progress[fieldId] || 0;
+        progress[fieldId] = (current > idx) ? idx : idx+1; // allow unmark by clicking earlier step
+        saveProgress(); renderRoadmapFor(fieldId);
+      };
+
+      stepContent.appendChild(t); stepContent.appendChild(d); stepContent.appendChild(links);
+      li.appendChild(stepIndex); li.appendChild(stepContent); li.appendChild(progressBtn);
+      roadmapList.appendChild(li);
+    });
+
+    // show progress percent
+    updateRoadmapProgress(fieldId);
+  }
+
+  function updateRoadmapProgress(fieldId){
+    const f = findField(fieldId);
+    const steps = (f.roadmap || []).length;
+    const completed = Math.min(progress[fieldId] || 0, steps);
+    const pct = steps === 0 ? 0 : Math.round((completed / steps) * 100);
+    // If you want a visual progress bar, add element with class .progress-fill and it'll be updated
+    const pf = document.querySelector(".progress-fill");
+    if(pf) pf.style.width = pct + "%";
+  }
+
+  function onClearProgress(){
+    if(!selectedField) return;
+    if(!confirm("Clear progress for this career roadmap?")) return;
+    progress[selectedField] = 0;
+    saveProgress();
+    renderRoadmapFor(selectedField);
+  }
+
+  // helpers
+  function findRoadmapFor(fieldId){
+    const f = findField(fieldId);
+    return f ? (f.roadmap || []) : [];
+  }
+
+  function showToast(text){
+    const t = document.createElement("div"); t.textContent = text;
+    t.style.position = "fixed"; t.style.right = "18px"; t.style.bottom = "18px";
+    t.style.padding = "10px 14px"; t.style.background = "rgba(0,0,0,0.7)"; t.style.color = "#fff"; t.style.borderRadius = "8px";
+    document.body.appendChild(t); setTimeout(()=> t.remove(), 2200);
+  }
+
+  function getVar(name){
+    const val = getComputedStyle(document.documentElement).getPropertyValue(name);
+    return val ? val.trim() : "#4caf50";
+  }
+
+})();
+  </script>
+</body>
+</html>

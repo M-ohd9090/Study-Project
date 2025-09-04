@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advanced Progress Tracker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f") no-repeat center center/cover;
+      background-attachment: fixed;
+      color: #fff;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .topbar {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      padding: 12px;
+      text-align: left;
+    }
+
+    .topbar a {
+      color: #fff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .top h1 {
+      font-size: 1.8rem;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .top-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .theme-export {
+      display: flex;
+      gap: 10px;
+    }
+
+    .theme-export button,
+    .theme-export label {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      transition: 0.3s;
+    }
+
+    .theme-export button:hover,
+    .theme-export label:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filters button {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .filters button.active {
+      background: #4caf50;
+    }
+
+    .goal-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(12px);
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .goal-form input {
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      min-width: 150px;
+    }
+
+    .goal-form button {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .goal-form button:hover {
+      background: #45a049;
+    }
+
+    .content {
+      display: flex;
+      gap: 20px;
+    }
+
+    .left-col { flex: 2; }
+    .right-col { flex: 1; min-width: 300px; }
+
+    .goals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .goal {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      padding: 14px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      transition: 0.3s;
+    }
+
+    .goal:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    }
+
+    .goal .progress-bar {
+      height: 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .goal .progress-fill {
+      height: 100%;
+      background: #4caf50;
+      width: 0%;
+      transition: width 0.4s;
+    }
+
+    .controls button {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .controls button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .chart-card, .info-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    }
+
+    h2, h3 {
+      color: #ffcccb;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+      margin-bottom: 10px;
+    }
+  </style>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="top-links">
+      <a href="Dashboard.html">⬅ Back to Dashboard</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <header class="top">
+      <h1>📊 Advanced Progress Tracker</h1>
+      <div class="top-controls">
+        <div class="theme-export">
+          <button id="dark-toggle" onclick="toggleDarkMode()">🌗 Toggle Theme</button>
+          <button onclick="exportGoals()">⬇ Export JSON</button>
+          <label class="import-btn">⬆ Import JSON
+            <input id="import-file" type="file" accept="application/json" onchange="importGoals(event)" hidden>
+          </label>
+        </div>
+        <div class="filters">
+          <button onclick="setFilter('all')" id="f-all" class="active">All</button>
+          <button onclick="setFilter('active')" id="f-active">Active</button>
+          <button onclick="setFilter('completed')" id="f-completed">Completed</button>
+          <button onclick="setFilter('expired')" id="f-expired">Expired</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="goal-form">
+      <input id="goal-title" placeholder="Goal title (e.g. Finish Python course)" />
+      <input id="goal-steps" type="number" placeholder="Total steps (e.g. 10)" />
+      <input id="goal-start" type="date" />
+      <input id="goal-end" type="date" />
+      <input id="goal-category" placeholder="Category (Study/Personal/Fitness)" />
+      <input id="goal-note" placeholder="Optional short note" />
+      <input id="goal-reminder-time" type="time" title="Reminder time (daily) - page must be open" />
+      <button onclick="addGoal()">➕ Add Goal</button>
+    </section>
+
+    <main class="content">
+      <section class="left-col">
+        <h2>Goals</h2>
+        <div id="goals-list" class="goals-list"></div>
+      </section>
+
+      <aside class="right-col">
+        <h2>Analytics</h2>
+        <div class="chart-card">
+          <h3>Overall Steps: Completed vs Remaining</h3>
+          <canvas id="donutChart" width="300" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Progress per Goal (%)</h3>
+          <canvas id="barChart" width="300" height="220"></canvas>
+        </div>
+        <div class="info-card">
+          <h3>Notes</h3>
+          <p>Reminder notifications only work while this page is open and you allow notifications.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // keep your same JavaScript logic (unchanged)
+    let goals = JSON.parse(localStorage.getItem("goals") || "[]");
+    let filter = "all";
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
+    }
+
+    function addGoal() {
+      const title = document.getElementById("goal-title").value.trim();
+      const steps = parseInt(document.getElementById("goal-steps").value) || 0;
+      const start = document.getElementById("goal-start").value;
+      const end = document.getElementById("goal-end").value;
+      const category = document.getElementById("goal-category").value;
+      const note = document.getElementById("goal-note").value;
+
+      if (!title || steps <= 0) return alert("Please enter a valid goal title and steps.");
+
+      const goal = {
+        id: Date.now(),
+        title, steps,
+        done: 0,
+        start, end, category, note
+      };
+      goals.push(goal);
+      saveGoals();
+      renderGoals();
+      renderCharts();
+    }
+
+    function saveGoals() {
+      localStorage.setItem("goals", JSON.stringify(goals));
+    }
+
+    function setFilter(f) {
+      filter = f;
+      document.querySelectorAll(".filters button").forEach(btn => btn.classList.remove("active"));
+      document.getElementById("f-" + f).classList.add("active");
+      renderGoals();
+    }
+
+    function renderGoals() {
+      const list = document.getElementById("goals-list");
+      list.innerHTML = "";
+
+      let filtered = goals;
+      const today = new Date().toISOString().split("T")[0];
+      if (filter === "active") filtered = goals.filter(g => g.done < g.steps);
+      else if (filter === "completed") filtered = goals.filter(g => g.done >= g.steps);
+      else if (filter === "expired") filtered = goals.filter(g => g.end && g.end < today && g.done < g.steps);
+
+      filtered.forEach(goal => {
+        const percent = (goal.done / goal.steps) * 100;
+        const div = document.createElement("div");
+        div.className = "goal";
+        div.innerHTML = `
+          <div class="top-row">
+            <strong>${goal.title}</strong>
+            <span>${goal.done}/${goal.steps}</span>
+          </div>
+          <div class="meta">${goal.category || ""} ${goal.start} → ${goal.end}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+          <div class="controls">
+            <button onclick="updateGoal(${goal.id},1)">+ Step</button>
+            <button onclick="updateGoal(${goal.id},-1)">- Step</button>
+            <button onclick="deleteGoal(${goal.id})">🗑 Delete</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function updateGoal(id, change) {
+      const g = goals.find(g => g.id === id);
+      if (!g) return;
+      g.done = Math.max(0, Math.min(g.steps, g.done + change));
+      saveGoals();
+      renderGoals();
+      renderCharts();
+    }
+
+    function deleteGoal(id) {
+      goals = goals.filter(g => g.id !== id);
+      saveGoals();
+      renderGoals();
+      renderCharts();
+    }
+
+    function exportGoals() {
+      const blob = new Blob([JSON.stringify(goals, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "goals.json";
+      a.click();
+    }
+    function importGoals(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        goals = JSON.parse(reader.result);
+        saveGoals();
+        renderGoals();
+        renderCharts();
+      };
+      reader.readAsText(file);
+    }
+
+    let donutChart, barChart;
+    function renderCharts() {
+      const ctx1 = document.getElementById("donutChart").getContext("2d");
+      const ctx2 = document.getElementById("barChart").getContext("2d");
+
+      const totalSteps = goals.reduce((a,g)=>a+g.steps,0);
+      const totalDone = goals.reduce((a,g)=>a+g.done,0);
+
+      if (donutChart) donutChart.destroy();
+      donutChart = new Chart(ctx1, {
+        type:"doughnut",
+        data:{
+          labels:["Completed","Remaining"],
+          datasets:[{data:[totalDone, totalSteps-totalDone], backgroundColor:["#4caf50","#ddd"]}]
+        }
+      });
+
+      if (barChart) barChart.destroy();
+      barChart = new Chart(ctx2, {
+        type:"bar",
+        data:{
+          labels:goals.map(g=>g.title),
+          datasets:[{label:"% Done", data:goals.map(g=>Math.round((g.done/g.steps)*100)||0), backgroundColor:"#3f51b5"}]
+        },
+        options:{scales:{y:{beginAtZero:true,max:100}}}
+      });
+    }
+
+    renderGoals();
+    renderCharts();
+  </script>
+</body>
+</html>

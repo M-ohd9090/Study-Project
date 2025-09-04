@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>📝 Quick Notes (Enhanced)</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f") no-repeat center/cover;
+    background-attachment: fixed;
+    color: #fff;
+  }
+
+  header {
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  main {
+    max-width: 900px;
+    margin: 20px auto;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.5);
+  }
+
+  input, textarea, select, button {
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 10px;
+    border: none;
+    width: 100%;
+    font-size: 1em;
+  }
+
+  textarea { resize: vertical; }
+
+  button {
+    background: #4caf50;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover { background: #43a047; }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .note {
+    padding: 12px;
+    border-radius: 12px;
+    margin: 10px 0;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    transition: 0.3s;
+  }
+
+  .note:hover { transform: translateY(-3px); }
+
+  .note small {
+    display: block;
+    margin-top: 6px;
+    color: #ddd;
+    font-size: 0.8em;
+  }
+
+  .note button {
+    margin-top: 8px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .note button:hover { background: rgba(255,255,255,0.3); }
+
+  .pinned { border: 2px solid gold; }
+</style>
+</head>
+<body>
+<header>📝 Quick Notes (Enhanced)</header>
+<main>
+  <input type="text" id="searchInput" placeholder="🔍 Search notes...">
+  <select id="filterTag"><option value="">All Tags</option></select>
+  <textarea id="noteContent" placeholder="Write your note here..."></textarea>
+  <input type="text" id="noteTag" placeholder="🏷 Tag (optional)">
+  <input type="time" id="noteReminder" title="⏰ Reminder Time">
+  
+  <div class="controls">
+    <button onclick="addNote()">➕ Add Note</button>
+    <button onclick="startSpeech()">🎙 Speak</button>
+    <button onclick="exportNotes()">⬇ Export</button>
+    <button onclick="importFile.click()">⬆ Import</button>
+    <input type="file" id="importFile" onchange="importNotes(event)" hidden>
+  </div>
+
+  <h3>📌 Saved Notes</h3>
+  <div id="notesList"></div>
+</main>
+
+<script>
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+
+// Render Notes
+function renderNotes() {
+  let search = document.getElementById("searchInput").value.toLowerCase();
+  let tagFilter = document.getElementById("filterTag").value;
+  let notesList = document.getElementById("notesList");
+  notesList.innerHTML = "";
+
+  let tags = new Set();
+  notes.sort((a,b) => b.pinned - a.pinned); // pinned on top
+
+  notes.forEach((note, index) => {
+    tags.add(note.tag);
+    if ((search && !note.content.toLowerCase().includes(search)) ||
+        (tagFilter && note.tag !== tagFilter)) return;
+
+    let div = document.createElement("div");
+    div.className = "note" + (note.pinned ? " pinned" : "");
+    div.innerHTML = `
+      <p ondblclick="editNote(${index}, this)">${note.content}</p>
+      <small>🏷 ${note.tag || "None"} | ${note.date}</small>
+      <div class="controls">
+        <button onclick="togglePin(${index})">${note.pinned ? "Unpin" : "📌 Pin"}</button>
+        <button onclick="speak('${note.content}')">🔊 Read</button>
+        <button onclick="deleteNote(${index})">🗑 Delete</button>
+      </div>
+    `;
+    notesList.appendChild(div);
+  });
+
+  // Rebuild filter tags
+  let tagSelect = document.getElementById("filterTag");
+  tagSelect.innerHTML = `<option value="">All Tags</option>`;
+  tags.forEach(t => { if (t) tagSelect.innerHTML += `<option value="${t}">${t}</option>`; });
+}
+
+// Add Note
+function addNote() {
+  let content = document.getElementById("noteContent").value.trim();
+  let tag = document.getElementById("noteTag").value.trim();
+  let reminder = document.getElementById("noteReminder").value;
+  if (!content) return alert("Please write something!");
+
+  let note = { 
+    content, tag, 
+    date: new Date().toLocaleString(),
+    pinned: false,
+    reminder 
+  };
+  notes.push(note);
+  saveNotes();
+  renderNotes();
+
+  document.getElementById("noteContent").value = "";
+  document.getElementById("noteTag").value = "";
+  document.getElementById("noteReminder").value = "";
+}
+
+// Save Notes
+function saveNotes() {
+  localStorage.setItem("notes", JSON.stringify(notes));
+}
+
+// Delete Note
+function deleteNote(index) {
+  notes.splice(index, 1);
+  saveNotes();
+  renderNotes();
+}
+
+// Edit Note
+function editNote(index, elem) {
+  let newContent = prompt("Edit note:", notes[index].content);
+  if (newContent !== null) {
+    notes[index].content = newContent;
+    saveNotes();
+    renderNotes();
+  }
+}
+
+// Pin/Unpin
+function togglePin(index) {
+  notes[index].pinned = !notes[index].pinned;
+  saveNotes();
+  renderNotes();
+}
+
+// Voice to Text
+function startSpeech() {
+  let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";
+  recognition.start();
+  recognition.onresult = (event) => {
+    document.getElementById("noteContent").value += event.results[0][0].transcript;
+  };
+}
+
+// Text to Speech
+function speak(text) {
+  let utter = new SpeechSynthesisUtterance(text);
+  speechSynthesis.speak(utter);
+}
+
+// Export Notes
+function exportNotes() {
+  let blob = new Blob([JSON.stringify(notes)], { type: "application/json" });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = "notes.json";
+  a.click();
+}
+
+// Import Notes
+function importNotes(event) {
+  let file = event.target.files[0];
+  if (!file) return;
+  let reader = new FileReader();
+  reader.onload = e => {
+    try {
+      notes = JSON.parse(e.target.result);
+      saveNotes();
+      renderNotes();
+    } catch { alert("Invalid file format"); }
+  };
+  reader.readAsText(file);
+}
+
+// Reminder Notification
+setInterval(() => {
+  let now = new Date();
+  let time = now.toTimeString().slice(0,5);
+  notes.forEach(n => {
+    if (n.reminder === time) {
+      new Notification("Reminder 📝", { body: n.content });
+      n.reminder = ""; // prevent repeat
+      saveNotes();
+    }
+  });
+}, 60000);
+
+// Ask notification permission
+if ("Notification" in window) Notification.requestPermission();
+
+document.getElementById("searchInput").addEventListener("input", renderNotes);
+document.getElementById("filterTag").addEventListener("change", renderNotes);
+
+renderNotes();
+</script>
+</body>
+</html>
